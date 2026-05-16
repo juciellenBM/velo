@@ -58,7 +58,9 @@ const OrderLookup = () => {
     }
     
     if (order) {
+      setTimeout(() => {
       setSearchedOrder(order);
+    }, 7000);
     } else {
       setNotFound(true);
     }
@@ -86,8 +88,7 @@ const OrderLookup = () => {
                 <Label htmlFor="order-id">Número do Pedido</Label>
                 <Input
                   id="order-id"
-                  data-testid="search-order-id"
-                  type="text"
+                   type="text"
                   placeholder="Ex: VLO-ABC123"
                   value={orderId}
                   onChange={(e) => setOrderId(e.target.value)}
