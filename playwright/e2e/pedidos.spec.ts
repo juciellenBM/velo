@@ -10,21 +10,13 @@ test('Deve consultar um pedido aprovado', async ({ page }) => {
   await expect (page.getByRole('heading')).toContainText ('Consultar Pedido')
   
   //Act
-  
-  //await page.getByTestId('search-order-id').click();
-  // await page.getByTestId('search-order-id').fill('VLO-EHWTGA');
-  //caso não tenha identificação visual é possivel usar localização por identificação visual exemplo:
-  //await page.getByRole('textbox', { name: 'Número do Pedido' }).fill('VLO-EHWTGA'); esse exemplo busca por name
-  //caso não tenha identificação visual é possivel usar localização por identificação visual exemplo:/ esse exemplo busca porlabel e div retornando o input da div
-  await page.locator('//label[text()="Número do Pedido"]/..//input').fill('VLO-EHWTGA');
-  //await page.getByRole('textbox', { name: 'Número do Pedido' }).fill('VLO-EHWTGA');
+  await page.getByRole('textbox', { name: 'Número do Pedido' }).fill('VLO-EHWTGA');
 
-  await page.getByTestId('search-order-button').click();
+  await page.getByRole ('button', {name:'Buscar Pedido'}).click();
 //Assert
-  // Então o usuário deve ver o pedido aprovado
-  //await page.waitForTimeout(10000); //espera 10 segundos para o pedido ser aprovado estrategia de espera ruim pois sempre vai esperar 10 segundos mesmo que o pedido já tenha sido aprovado
-await expect(page.getByTestId('order-result-status')).toBeVisible({timeout: 30000}); //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
-  await expect(page.getByTestId('order-result-id')).toContainText('VLO-EHWTGA');
-  await expect(page.getByTestId('order-result-status')).toBeVisible();
-  await expect(page.getByTestId('order-result-status')).toContainText('APROVADO');
+  
+await expect(page.getByText('Pedido',{exact:true})).toBeVisible({timeout: 30000}); //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
+await expect(page.getByText('VLO-EHWTGA')).toBeVisible();
+await expect(page.getByText('APROVADO')).toBeVisible();
+
 });
