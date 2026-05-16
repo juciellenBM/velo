@@ -14,9 +14,9 @@ test('Deve consultar um pedido aprovado', async ({ page }) => {
 
   await page.getByRole ('button', {name:'Buscar Pedido'}).click();
 //Assert
-  
-await expect(page.getByText('Pedido',{exact:true})).toBeVisible({timeout: 30000}); //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
-await expect(page.getByText('VLO-EHWTGA')).toBeVisible();
+ const orderCode = page.locator ('//p[text()="Pedido"]/..//p[text()="VLO-EHWTGA"]')
+await expect(page.getByText('Pedido',{exact:true})).toBeVisible({timeout: 10000}); //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
+await expect(orderCode).toBeVisible();
 await expect(page.getByText('APROVADO')).toBeVisible();
 
-});
+}); 

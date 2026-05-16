@@ -55,12 +55,12 @@ const OrderLookup = () => {
     if (error) {
       setNotFound(true);
       return;
-    }
+    };
     
     if (order) {
       setTimeout(() => {
       setSearchedOrder(order);
-    }, 7000);
+    }, 1000);
     } else {
       setNotFound(true);
     }
