@@ -14,9 +14,13 @@ test('Deve consultar um pedido aprovado', async ({ page }) => {
 
   await page.getByRole ('button', {name:'Buscar Pedido'}).click();
 //Assert
- const orderCode = page.locator ('//p[text()="Pedido"]/..//p[text()="VLO-EHWTGA"]')
-await expect(page.getByText('Pedido',{exact:true})).toBeVisible({timeout: 10000}); //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
-await expect(orderCode).toBeVisible();
+
+
+ const containerPedido = page.getByRole ('paragraph')
+ .filter ({hasText: /^Pedido$/})// estrategia de expressão regular 
+ .locator ('..') // aqui o elemento sobe para o elemento pai no html 
+ //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
+await expect (containerPedido).toContainText ('VLO-EHWTGA', {timeout: 10000} )
 await expect(page.getByText('APROVADO')).toBeVisible();
 
 }); 

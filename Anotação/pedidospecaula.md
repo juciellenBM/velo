@@ -15,3 +15,18 @@
   //await page.waitForTimeout(10000); //espera 10 segundos para o pedido ser aprovado estrategia de espera ruim pois sempre vai esperar 10 segundos mesmo que o pedido já tenha sido aprovado
 await expect(page.getByTestId('order-result-status')).toBeVisible({timeout: 30000}); //espera 30 segundos para o pedido ser aprovado entretanto aprova caso seja aprovado antes de 30 segundos
   await expect(page.getByTestId('order-result-id')).toContainText('VLO-EHWTGA');
+
+
+  pode criar constante para localizar quando não tem id, o caso do meto do getbytext pode dar problema caso o texto apareça em campo invalido passando um teste de forma indevida. 
+
+await expect(page.getByText('Pedido',{exact:true})).toBeVisible({timeout: 10000});
+  assim duas abordagem por xpath aprender a montar xpath e a abordagem 
+
+   const orderCode = page.locator ('//p[text()="Pedido"]/..//p[text()="VLO-EHWTGA"]')
+
+   await expect(orderCode).toBeVisible();
+
+  const containerPedido = page.getByRole ('paragraph')
+  .filter ({hasText: 'Pedido'}) // ou
+  .filter ({hasText: /^Pedido$/})// estrategia de expressão regular 
+  .locator ('..') // aqui o elemento sobe para o elemento pai no html 
