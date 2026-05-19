@@ -1,23 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { gerarNumPed } from '../support/helpers';
 // AAA - Arrange, Act, Assert
 
 
-function gerarNumPed() {
-  const prefixo = "VLO-";
-  const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  
-  let codigo = "";
-
-  for (let i = 0; i < 6; i++) {
-    const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
-    codigo += caracteres[indiceAleatorio];
-  }
-
-  return prefixo + codigo;
-}
-
-// Exemplo de uso
-console.log(gerarNumPed());
 test('Deve consultar um pedido aprovado', async ({ page }) => {
   // Dado que o usuário está na página de consulta de pedidos
 
