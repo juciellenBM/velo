@@ -30,3 +30,44 @@ await expect(page.getByText('Pedido',{exact:true})).toBeVisible({timeout: 10000}
   .filter ({hasText: 'Pedido'}) // ou
   .filter ({hasText: /^Pedido$/})// estrategia de expressão regular 
   .locator ('..') // aqui o elemento sobe para o elemento pai no html 
+
+
+  ##Aula sobre Hooks de Teste 
+
+  Hooks de Teste
+Os hooks permitem executar código antes ou depois dos testes.
+Eles são úteis para preparar ambiente, limpar dados ou executar configurações.
+
+TypeScript
+test.beforeAll(async () => {
+  console.log('beforeAll: roda uma vez antes de todos os testes.')
+})
+
+test.beforeEach(async () => {
+  console.log('beforeEach: roda antes de cada teste.')
+})
+
+test.afterEach(async () => {
+  console.log('afterEach: roda depois de cada teste.')
+})
+
+test.afterAll(async () => {
+  console.log('afterAll: roda uma vez depois de todos os testes.')
+})
+Explicação
+Hook	Quando executa
+beforeAll	Executa uma vez antes de todos os testes
+beforeEach	Executa antes de cada teste
+afterEach	Executa depois de cada teste
+afterAll	Executa uma vez depois de todos os testes
+Ordem de execução
+Se houver dois testes, a ordem será:
+
+beforeAll
+beforeEach
+teste 1
+afterEach
+beforeEach
+teste 2
+afterEach
+afterAll
