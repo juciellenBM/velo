@@ -1,4 +1,4 @@
-
+//Função para gerar número de pedido aleatório	
 
 export function gerarNumPed() {
     const prefixo = "VLO-";
@@ -13,3 +13,6 @@ export function gerarNumPed() {
   
     return prefixo + codigo;
   }
+ 
+ 
+ 

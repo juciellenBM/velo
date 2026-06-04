@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { gerarNumPed } from '../support/helpers';
+import { gerarNumPed, } from '../support/helpers';
+import { OrderLookupPage } from '../support/pages/OrderLookupPage';
 // AAA - Arrange, Act, Assert
 
 test.describe ('Consulta de pedido',() =>{
@@ -104,9 +105,8 @@ test.describe ('Consulta de pedido',() =>{
    }
    
     //Act
-     await page.getByRole('textbox', { name: 'Número do Pedido' }).fill(order.number);
-
-    await page.getByRole ('button', {name:'Buscar Pedido'}).click();
+    const orderLookupPage = new OrderLookupPage(page);
+    await orderLookupPage.searchOrder(order.number);
     //Assert
 
 
@@ -177,9 +177,9 @@ test.describe ('Consulta de pedido',() =>{
   }
    
     //Act
-     await page.getByRole('textbox', { name: 'Número do Pedido' }).fill(order.number);
-
-    await page.getByRole ('button', {name:'Buscar Pedido'}).click();
+    const orderLookupPage = new OrderLookupPage(page);
+    await orderLookupPage.searchOrder(order.number);
+  
     //Assert
 
 
@@ -236,9 +236,8 @@ test.describe ('Consulta de pedido',() =>{
  
 
     //Act
-    await page.getByRole('textbox', { name: 'Número do Pedido' }).fill(order);
-
-    await page.getByRole ('button', {name:'Buscar Pedido'}).click();
+    const orderLookupPage = new OrderLookupPage(page);
+    await orderLookupPage.searchOrder(order);
     //Assert
     await expect(page.locator('#root')).toMatchAriaSnapshot(`
       - img
