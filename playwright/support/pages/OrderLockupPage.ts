@@ -70,6 +70,7 @@ export class OrderLockupPage {
       - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
       `)
     }
+    
     async validadeOrdernotfound(){
         await expect(this.page.locator('#root')).toMatchAriaSnapshot(`
             - img
