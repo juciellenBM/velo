@@ -1,18 +1,15 @@
 //Função para gerar número de pedido aleatório	
+export function generateOrderCode() {
+  const prefix = 'VLO';
 
-export function gerarNumPed() {
-    const prefixo = "VLO-";
-    const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    
-    let codigo = "";
-  
-    for (let i = 0; i < 6; i++) {
-      const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
-      codigo += caracteres[indiceAleatorio];
-    }
-  
-    return prefixo + codigo;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let randomPart = '';
+
+  for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      randomPart += chars[randomIndex];
   }
- 
- 
+
+  return `${prefix}-${randomPart}`;
+}
  
