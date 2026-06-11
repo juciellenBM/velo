@@ -70,5 +70,12 @@ export class OrderLockupPage {
       - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
       `)
     }
+    async validadeOrdernotfound(){
+        await expect(this.page.locator('#root')).toMatchAriaSnapshot(`
+            - img
+            - heading "Pedido não encontrado" [level=3]
+            - paragraph: Verifique o número do pedido e tente novamente
+            `)
+    }
 
 }
