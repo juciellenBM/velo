@@ -114,4 +114,16 @@ test.describe('Consulta de Pedido', () => {
   await orderLockupPage.validadeOrdernotfound()
 
  })
+
+ test('Deve exib ir mensagem quando o o pedido em qualquer formato não é encontrado', async ({ page }) => {
+
+  const order = generateOrderCode()
+
+  const orderLockupPage = new OrderLockupPage(page)
+  await orderLockupPage.searchOrder('ABC123')
+
+
+ await orderLockupPage.validadeOrdernotfound()
+
+})
 })
