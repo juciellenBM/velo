@@ -2,6 +2,18 @@ import { Page, expect } from '@playwright/test'
 
 export type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE'
 
+export type OrderDetails = {
+    number: string
+    status: OrderStatus
+    color: string
+    wheels: string
+    customer: {
+        name: string
+        email: string
+    }
+    payment: string
+}
+
 export class OrderLockupPage {
     constructor(private page: Page) { }
 
@@ -38,7 +50,12 @@ export class OrderLockupPage {
     }
 
 
-     async validateOrderDetails(order: any){
+    async validateOrder(order: OrderDetails) {
+        await this.validateOrderDetails(order)
+        await this.validateStatusBadge(order.status)
+    }
+
+     async validateOrderDetails(order: OrderDetails){
 
      await expect(this.page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
       - img
@@ -71,12 +88,9 @@ export class OrderLockupPage {
       `)
     }
     
-    async validadeOrdernotfound(){
-        await expect(this.page.locator('#root')).toMatchAriaSnapshot(`
-            - img
-            - heading "Pedido não encontrado" [level=3]
-            - paragraph: Verifique o número do pedido e tente novamente
-            `)
+    async validateOrderNotFound(){
+        await expect(this.page.getByRole('heading', { name: 'Pedido não encontrado' })).toBeVisible()
+        await expect(this.page.getByText('Verifique o número do pedido e tente novamente', { exact: true })).toBeVisible()
     }
 
 }

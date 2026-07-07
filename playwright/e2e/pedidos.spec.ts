@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 import { generateOrderCode } from '../support/helpers'
 
-import { OrderLockupPage } from '../support/pages/OrderLockupPage'
+import { OrderDetails, OrderLockupPage } from '../support/pages/OrderLockupPage'
 
 /// AAA - Arrange, Act, Assert
 
@@ -19,7 +19,7 @@ test.describe('Consulta de Pedido', () => {
 
   test('deve consultar um pedido aprovado', async ({ page }) => {
 
-   const order = {
+   const order: OrderDetails = {
     number: 'VLO-EHWTGA',
     status: 'APROVADO' as const,
     color:'Midnight Black',
@@ -31,26 +31,23 @@ test.describe('Consulta de Pedido', () => {
     },
     payment :'À Vista'
    }
-   
-    // Act  
+
+    // Act
     const orderLockupPage = new OrderLockupPage(page)
     await orderLockupPage.searchOrder(order.number)
 
     // Assert
-    await orderLockupPage.validateOrderDetails(order)
-
-    // Validação do badge de status encapsulada no Page Object
-    await orderLockupPage.validateStatusBadge(order.status)
+    await orderLockupPage.validateOrder(order)
 
   })
 
 
   test('deve consultar um pedido reprovado', async ({ page }) => {
     // Dado que o usuário está na página de consulta de pedidos
-    //Test Data 
+    //Test Data
    //const order = 'VLO-EHWTGA'
 
-   const order = {
+   const order: OrderDetails = {
     number: 'VLO-GOUQJH',
     status: 'REPROVADO' as const,
     color:'Lunar White',
@@ -62,24 +59,20 @@ test.describe('Consulta de Pedido', () => {
     },
     payment :'À Vista'
    }
-   
-     // Act  
+
+     // Act
      const orderLockupPage = new OrderLockupPage(page)
      await orderLockupPage.searchOrder(order.number)
- 
+
      // Assert
-     await orderLockupPage.validateOrderDetails(order)
- 
-     // Validação do badge de status encapsulada no Page Object
-     await orderLockupPage.validateStatusBadge(order.status)
-   })
-    
+        await orderLockupPage.validateOrder(order)
+      })
 
 
-  
+
    test('deve consultar um pedido em analise', async ({ page }) => {
 // test data
-   const order = {
+   const order: OrderDetails = {
     number: 'VLO-0YFPJY',
     status: 'EM_ANALISE' as const,
     color:'Midnight Black',
@@ -91,16 +84,13 @@ test.describe('Consulta de Pedido', () => {
     },
     payment :'À Vista'
   }
-   
-   // Act  
+
+   // Act
    const orderLockupPage = new OrderLockupPage(page)
    await orderLockupPage.searchOrder(order.number)
 
    // Assert
-   await orderLockupPage.validateOrderDetails(order)
- 
-   // Validação do badge de status encapsulada no Page Object
-   await orderLockupPage.validateStatusBadge(order.status  )
+   await orderLockupPage.validateOrder(order)
  })
 
  test('deve exibir mensagem quando o pedido não é encontrado', async ({ page }) => {
@@ -111,19 +101,16 @@ test.describe('Consulta de Pedido', () => {
    await orderLockupPage.searchOrder(order)
 
 
-  await orderLockupPage.validadeOrdernotfound()
+  await orderLockupPage.validateOrderNotFound()
 
  })
 
- test('Deve exib ir mensagem quando o o pedido em qualquer formato não é encontrado', async ({ page }) => {
-
-  const order = generateOrderCode()
-
+ test('deve exibir mensagem quando o pedido hardcoded nao e encontrado', async ({ page }) => {
   const orderLockupPage = new OrderLockupPage(page)
   await orderLockupPage.searchOrder('ABC123')
 
 
- await orderLockupPage.validadeOrdernotfound()
+ await orderLockupPage.validateOrderNotFound()
 
 })
 
