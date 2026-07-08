@@ -1,8 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
+
+import { LandingPage } from '../support/pages/LandingPage'
 
 test(' a webapp deve estar online', async ({ page }) => {
-  await page.goto('http://localhost:5173');
+  const landingPage = new LandingPage(page)
 
-  await expect(page).toHaveTitle(/Velô by Papito/);
-});
+  await landingPage.abrir()
 
+  await expect(page).toHaveTitle(/Velô by Papito/)
+})
