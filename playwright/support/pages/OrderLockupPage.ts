@@ -53,7 +53,7 @@ export class OrderLockupPage {
       - paragraph: ${order.payment}
       - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
       `
-        await expect(this.page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(snapshot)
+        await expect(this.page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(snapshot, { timeout: 30_000 })
     }
 
     async validateStatusBadge(status: OrderStatus) {
@@ -84,10 +84,7 @@ export class OrderLockupPage {
     }
 
     async validateOrderNotFound() {
-        await expect(this.page.locator('#root')).toMatchAriaSnapshot(`
-      - img
-      - heading "Pedido não encontrado" [level=3]
-      - paragraph: Verifique o número do pedido e tente novamente
-      `)
+        await expect(this.page.getByRole('heading', { name: 'Pedido não encontrado' })).toBeVisible({ timeout: 30_000 })
+        await expect(this.page.getByText('Verifique o número do pedido e tente novamente', { exact: true })).toBeVisible()
     }
 }

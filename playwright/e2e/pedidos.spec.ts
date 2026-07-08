@@ -16,7 +16,7 @@ test.describe('Consulta de Pedido', () => {
     await new Navbar(page).orderLockupLink()
 
     orderLockupPage = new OrderLockupPage(page)
-    await orderLockupPage.validateOrderNotFound()
+    await orderLockupPage.validatePageLoaded()
   })
 
   test('deve consultar um pedido aprovado', async ({ page }) => {
