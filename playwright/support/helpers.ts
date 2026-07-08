@@ -1,4 +1,3 @@
-//Função para gerar número de pedido aleatório	
 export function generateOrderCode() {
   const prefix = 'VLO';
 
@@ -12,4 +11,3 @@ export function generateOrderCode() {
 
   return `${prefix}-${randomPart}`;
 }
- 

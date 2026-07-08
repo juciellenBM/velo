@@ -35,7 +35,6 @@ test.describe('Consulta de Pedido', () => {
    }
 
    await orderLockupPage.searchOrder(order.number)
-
    await orderLockupPage.validateOrderDetails(order)
    await orderLockupPage.validateStatusBadge(order.status)
 
