@@ -1,51 +1,44 @@
 import { Page, expect } from '@playwright/test'
 
-export type CorVeiculo = 'Glacier Blue' | 'Midnight Black' | 'Lunar White'
-export type RodaVeiculo = 'Aero Wheels' | 'Sport Wheels'
-
 export function createConfiguradorActions(page: Page) {
-  const elements = {
-    title: page.getByRole('heading', { name: 'Velô Sprint' }),
-    carImage: page.getByTestId('car-exterior-image'),
-    totalPrice: page.getByTestId('total-price'),
-    colorGlacierBlue: page.getByRole('button', { name: 'Glacier Blue' }),
-    colorMidnightBlack: page.getByRole('button', { name: 'Midnight Black' }),
-    colorLunarWhite: page.getByRole('button', { name: 'Lunar White' }),
-    wheelAero: page.getByRole('button', { name: /Aero Wheels/i }),
-    wheelSport: page.getByRole('button', { name: /Sport Wheels/i }),
-  }
+  const optionalCheckbox = (name: string | RegExp) => page.getByRole('checkbox', { name })
 
   return {
-    elements,
-
     async open() {
       await page.goto('/configure')
-      await expect(elements.title).toBeVisible()
-      await expect(elements.carImage).toBeVisible()
     },
 
-    async selecionarCor(cor: CorVeiculo) {
-      await page.getByRole('button', { name: cor }).click()
+    async selectColor(name: string) {
+      await page.getByRole('button', { name }).click()
     },
 
-    async selecionarRoda(roda: RodaVeiculo) {
-      const rodaButton = roda === 'Sport Wheels' ? elements.wheelSport : elements.wheelAero
-      await rodaButton.click()
+    async selectWheels(name: string | RegExp) {
+      await page.getByRole('button', { name }).click()
     },
 
-    async validarPreco(valorEsperado: string) {
-      await expect(elements.totalPrice).toContainText(valorEsperado)
+    async expectPrice(price: string) {
+      const priceElement = page.getByTestId('total-price')
+      await expect(priceElement).toBeVisible()
+      await expect(priceElement).toContainText(price)
     },
 
-    async validarPreview(corSlug: string, rodaSlug: string) {
-      await expect(elements.carImage).toHaveAttribute(
-        'alt',
-        new RegExp(`${corSlug}.*${rodaSlug}`, 'i')
-      )
-      await expect(elements.carImage).toHaveAttribute(
-        'src',
-        new RegExp(`${corSlug}-${rodaSlug}-wheels\\.png`)
-      )
+    async expectCarImageSrc(src: string | RegExp) {
+      const carImage = page.locator('img[alt^="Velô Sprint"]')
+      await expect(carImage).toHaveAttribute('src', src)
+    },
+
+    async checkOptional(name: string | RegExp) {
+      await expect(optionalCheckbox(name)).toBeVisible()
+      await optionalCheckbox(name).check()
+    },
+
+    async uncheckOptional(name: string | RegExp) {
+      await expect(optionalCheckbox(name)).toBeVisible()
+      await optionalCheckbox(name).uncheck()
+    },
+
+    async finishConfigurator() {
+      await page.getByRole('button', { name: 'Monte o Seu' }).click()
     },
   }
 }

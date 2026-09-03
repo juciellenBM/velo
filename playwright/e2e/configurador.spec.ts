@@ -2,47 +2,55 @@ import { test, expect } from '../support/fixtures'
 
 test.describe('Configurador de Veículo', () => {
   test.beforeEach(async ({ app }) => {
-    // Arrange
     await app.configurador.open()
   })
 
   test('deve atualizar a imagem no preview e manter o preço base ao trocar as cores do veículo', async ({ app }) => {
-    // Arrange - Estado inicial de fábrica
-    await app.configurador.validarPreco('40.000,00')
-    await app.configurador.validarPreview('glacier-blue', 'aero')
+    await app.configurador.expectPrice('40.000,00')
+    await app.configurador.expectCarImageSrc(/glacier-blue-aero-wheels\.png/)
 
-    // Act - Selecionar cor Midnight Black
-    await app.configurador.selecionarCor('Midnight Black')
+    await app.configurador.selectColor('Midnight Black')
+    await app.configurador.expectCarImageSrc(/midnight-black-aero-wheels\.png/)
+    await app.configurador.expectPrice('40.000,00')
 
-    // Assert - Preview atualiza e preço permanece R$ 40.000,00
-    await app.configurador.validarPreview('midnight-black', 'aero')
-    await app.configurador.validarPreco('40.000,00')
-
-    // Act - Selecionar cor Lunar White
-    await app.configurador.selecionarCor('Lunar White')
-
-    // Assert - Preview atualiza e preço permanece R$ 40.000,00
-    await app.configurador.validarPreview('lunar-white', 'aero')
-    await app.configurador.validarPreco('40.000,00')
+    await app.configurador.selectColor('Lunar White')
+    await app.configurador.expectCarImageSrc(/lunar-white-aero-wheels\.png/)
+    await app.configurador.expectPrice('40.000,00')
   })
 
   test('deve atualizar a imagem no preview e recalcular o preço ao selecionar e desmarcar rodas esportivas', async ({ app }) => {
-    // Arrange - Estado inicial com rodas Aero
-    await app.configurador.validarPreco('40.000,00')
-    await app.configurador.validarPreview('glacier-blue', 'aero')
+    await app.configurador.expectPrice('40.000,00')
+    await app.configurador.expectCarImageSrc(/glacier-blue-aero-wheels\.png/)
 
-    // Act - Selecionar Sport Wheels (+ R$ 2.000,00)
-    await app.configurador.selecionarRoda('Sport Wheels')
+    await app.configurador.selectWheels(/Sport Wheels/i)
+    await app.configurador.expectCarImageSrc(/glacier-blue-sport-wheels\.png/)
+    await app.configurador.expectPrice('42.000,00')
 
-    // Assert - Preview com roda sport e preço com acréscimo (R$ 42.000,00)
-    await app.configurador.validarPreview('glacier-blue', 'sport')
-    await app.configurador.validarPreco('42.000,00')
+    await app.configurador.selectWheels(/Aero Wheels/i)
+    await app.configurador.expectCarImageSrc(/glacier-blue-aero-wheels\.png/)
+    await app.configurador.expectPrice('40.000,00')
+  })
 
-    // Act - Selecionar novamente Aero Wheels
-    await app.configurador.selecionarRoda('Aero Wheels')
+  test('deve atualizar o preço dinâmico ao adicionar e remover opcionais e persistir no checkout', async ({ app }) => {
+    await app.configurador.expectPrice('40.000,00')
 
-    // Assert - Retorno ao preview aero e preço decrementado para R$ 40.000,00
-    await app.configurador.validarPreview('glacier-blue', 'aero')
-    await app.configurador.validarPreco('40.000,00')
+    await app.configurador.checkOptional(/Precision Park/i)
+    await app.configurador.expectPrice('45.500,00')
+
+    await app.configurador.checkOptional(/Flux Capacitor/i)
+    await app.configurador.expectPrice('50.500,00')
+
+    await app.configurador.uncheckOptional(/Precision Park/i)
+    await app.configurador.expectPrice('45.000,00')
+    await app.configurador.uncheckOptional(/Flux Capacitor/i)
+    await app.configurador.expectPrice('40.000,00')
+
+    await app.configurador.checkOptional(/Precision Park/i)
+    await app.configurador.expectPrice('45.500,00')
+    await app.configurador.finishConfigurator()
+
+    await app.checkout.validarPaginaCarregada()
+    await app.checkout.validarPrecoTotal('45.500,00')
+    await app.checkout.validarOpcionalNoResumo('Precision Park', '5.500,00')
   })
 })
