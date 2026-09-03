@@ -10,7 +10,7 @@ test.describe('Configurador de Veículo', () => {
     await configuradorPage.open()
   })
 
-  test('deve alterar a cor do veículo sem modificar o preço base', async () => {
+  test('deve atualizar a imagem no preview e manter o preço base ao trocar as cores do veículo', async () => {
     // Arrange - Estado inicial de fábrica
     await configuradorPage.validarPreco('40.000,00')
     await configuradorPage.validarPreview('glacier-blue', 'aero')
@@ -30,7 +30,7 @@ test.describe('Configurador de Veículo', () => {
     await configuradorPage.validarPreco('40.000,00')
   })
 
-  test('deve atualizar o preço dinâmico ao selecionar e desmarcar rodas esportivas', async () => {
+  test('deve atualizar a imagem no preview e recalcular o preço ao selecionar e desmarcar rodas esportivas', async () => {
     // Arrange - Estado inicial com rodas Aero
     await configuradorPage.validarPreco('40.000,00')
     await configuradorPage.validarPreview('glacier-blue', 'aero')
