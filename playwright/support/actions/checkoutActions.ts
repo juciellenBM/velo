@@ -22,6 +22,14 @@ export function createCheckoutActions(page: Page) {
     storeTrigger: page.getByRole('combobox', { name: 'Loja para Retirada' }),
     termsCheckbox: page.getByRole('checkbox', { name: /Li e aceito os Termos/i }),
     submitButton: page.getByRole('button', { name: 'Confirmar Pedido' }),
+    // Locators XPath ancorados aos labels dos respectivos campos
+    nameAlert: page.locator('//label[text()="Nome"]/..//p'),
+    surnameAlert: page.locator('//label[text()="Sobrenome"]/..//p'),
+    emailAlert: page.locator('//label[text()="Email"]/..//p'),
+    phoneAlert: page.locator('//label[text()="Telefone"]/..//p'),
+    cpfAlert: page.locator('//label[text()="CPF"]/..//p'),
+    storeAlert: page.locator('//label[text()="Loja para Retirada"]/..//p'),
+    termsAlert: page.locator('//label[@for="terms"]/following-sibling::p'),
   }
 
   return {
@@ -89,13 +97,13 @@ export function createCheckoutActions(page: Page) {
     },
 
     async expectAllRequiredFieldsErrors() {
-      await this.expectValidationError('Nome deve ter pelo menos 2 caracteres')
-      await this.expectValidationError('Sobrenome deve ter pelo menos 2 caracteres')
-      await this.expectValidationError('Email inválido')
-      await this.expectValidationError('Telefone inválido')
-      await this.expectValidationError('CPF inválido')
-      await this.expectValidationError('Selecione uma loja')
-      await this.expectValidationError('Aceite os termos')
+      await expect(elements.nameAlert).toHaveText('Nome deve ter pelo menos 2 caracteres')
+      await expect(elements.surnameAlert).toHaveText('Sobrenome deve ter pelo menos 2 caracteres')
+      await expect(elements.emailAlert).toHaveText('Email inválido')
+      await expect(elements.phoneAlert).toHaveText('Telefone inválido')
+      await expect(elements.cpfAlert).toHaveText('CPF inválido')
+      await expect(elements.storeAlert).toHaveText('Selecione uma loja')
+      await expect(elements.termsAlert).toHaveText('Aceite os termos')
     },
   }
 }

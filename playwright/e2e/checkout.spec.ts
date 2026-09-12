@@ -23,8 +23,8 @@ test.describe('Checkout - Validação de Formulário', () => {
     await app.checkout.submitOrder()
 
     // Assert
-    await app.checkout.expectValidationError('Nome deve ter pelo menos 2 caracteres')
-    await app.checkout.expectValidationError('Sobrenome deve ter pelo menos 2 caracteres')
+    await expect(app.checkout.elements.nameAlert).toHaveText('Nome deve ter pelo menos 2 caracteres')
+    await expect(app.checkout.elements.surnameAlert).toHaveText('Sobrenome deve ter pelo menos 2 caracteres')
   })
 
   test('deve exibir erro quando o email possuir formato inválido', async ({ app }) => {
@@ -37,7 +37,7 @@ test.describe('Checkout - Validação de Formulário', () => {
     await app.checkout.submitOrder()
 
     // Assert
-    await app.checkout.expectValidationError('Email inválido')
+    await expect(app.checkout.elements.emailAlert).toHaveText('Email inválido')
   })
 
   test('deve exibir erro quando o CPF estiver incompleto ou inválido', async ({ app }) => {
@@ -51,7 +51,7 @@ test.describe('Checkout - Validação de Formulário', () => {
     await app.checkout.submitOrder()
 
     // Assert
-    await app.checkout.expectValidationError('CPF inválido')
+    await expect(app.checkout.elements.cpfAlert).toHaveText('CPF inválido')
   })
 
   test('deve exibir erro quando todos os campos estiverem preenchidos mas os termos não foram aceitos', async ({ app }) => {
@@ -68,6 +68,6 @@ test.describe('Checkout - Validação de Formulário', () => {
     await app.checkout.submitOrder()
 
     // Assert
-    await app.checkout.expectValidationError('Aceite os termos')
+    await expect(app.checkout.elements.termsAlert).toHaveText('Aceite os termos')
   })
 })
