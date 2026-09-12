@@ -2,7 +2,7 @@ import { test, expect } from '../support/fixtures'
 import { generateOrderCode } from '../support/helpers'
 import type { OrderDetails } from '../support/actions/orderLockupActions'
 import { insertOrder, deleteOrderByNumber } from '../support/database/orderRepository'
-import crypto from 'crypto'
+
 
 test.describe('Consulta de Pedido', () => {
   test.beforeEach(async ({ app }) => {
@@ -18,28 +18,15 @@ test.describe('Consulta de Pedido', () => {
       customer: {
         name: 'JUCIELLEN MORAES',
         email: 'juciellen@hotmail.com',
+        document: '017.119.171-41',
+        phone: '(64) 99251-6810'
       },
       payment: 'À Vista',
+      total_price: '52500'
     }
 
     await deleteOrderByNumber(order.number)
-
-    await insertOrder({
-      id: crypto.randomUUID(),
-      order_number: order.number,
-      color: 'midnight-black',
-      wheel_type: 'sport',
-      customer_name: order.customer.name,
-      customer_email: order.customer.email,
-      customer_phone: '(64) 99251-6810',
-      customer_cpf: '017.119.171-41',
-      payment_method: 'avista',
-      total_price: '52500',
-      status: order.status,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      optionals: [],
-    })
+    await insertOrder(order)
 
     await app.orderLockup.searchOrder(order.number)
     await app.orderLockup.validateOrderDetails(order)
@@ -55,28 +42,15 @@ test.describe('Consulta de Pedido', () => {
       customer: {
         name: 'Karoliny Simões',
         email: 'karolinysimoes@gmail.com',
+        document: '946.637.180-00',
+        phone: '(64) 99215-0899'
       },
       payment: 'À Vista',
+      total_price: '52500'
     }
 
     await deleteOrderByNumber(order.number)
-
-    await insertOrder({
-      id: crypto.randomUUID(),
-      order_number: order.number,
-      color: 'lunar-white',
-      wheel_type: 'sport',
-      customer_name: order.customer.name,
-      customer_email: order.customer.email,
-      customer_phone: '(64) 99215-0899',
-      customer_cpf: '946.637.180-00',
-      payment_method: 'avista',
-      total_price: '52500',
-      status: order.status,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      optionals: [],
-    })
+    await insertOrder(order)
 
     await app.orderLockup.searchOrder(order.number)
     await app.orderLockup.validateOrderDetails(order)
@@ -92,28 +66,15 @@ test.describe('Consulta de Pedido', () => {
       customer: {
         name: 'João Bobo',
         email: 'joaobobo@velo.dev',
+        document: '561.309.830-18',
+        phone: '(64) 99999-9999'
       },
       payment: 'À Vista',
+      total_price: '40000'
     }
 
     await deleteOrderByNumber(order.number)
-
-    await insertOrder({
-      id: crypto.randomUUID(),
-      order_number: order.number,
-      color: 'midnight-black',
-      wheel_type: 'aero',
-      customer_name: order.customer.name,
-      customer_email: order.customer.email,
-      customer_phone: '(64) 99999-9999',
-      customer_cpf: '561.309.830-18',
-      payment_method: 'avista',
-      total_price: '40000',
-      status: order.status,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      optionals: [],
-    })
+    await insertOrder(order)
 
     await app.orderLockup.searchOrder(order.number)
     await app.orderLockup.validateOrderDetails(order)
