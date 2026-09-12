@@ -2,6 +2,7 @@ import { test, expect } from '../support/fixtures'
 import { generateOrderCode } from '../support/helpers'
 import type { OrderDetails } from '../support/actions/orderLockupActions'
 import { insertOrder, deleteOrderByNumber } from '../support/database/orderRepository'
+import testData from '../support/fixtures/orders.json' with { type: 'json' }
 
 
 test.describe('Consulta de Pedido', () => {
@@ -10,20 +11,7 @@ test.describe('Consulta de Pedido', () => {
   })
 
   test('deve consultar um pedido aprovado', async ({ app }) => {
-    const order: OrderDetails = {
-      number: 'VLO-S3RC01',
-      status: 'APROVADO',
-      color: 'Midnight Black',
-      wheels: 'sport Wheels',
-      customer: {
-        name: 'JUCIELLEN MORAES',
-        email: 'juciellen@hotmail.com',
-        document: '017.119.171-41',
-        phone: '(64) 99251-6810'
-      },
-      payment: 'À Vista',
-      total_price: '52500'
-    }
+    const order: OrderDetails = testData.aprovado as OrderDetails
 
     await deleteOrderByNumber(order.number)
     await insertOrder(order)
@@ -34,20 +22,7 @@ test.describe('Consulta de Pedido', () => {
   })
 
   test('deve consultar um pedido reprovado', async ({ app }) => {
-    const order: OrderDetails = {
-      number: 'VLO-S3RC02',
-      status: 'REPROVADO',
-      color: 'Lunar White',
-      wheels: 'sport Wheels',
-      customer: {
-        name: 'Karoliny Simões',
-        email: 'karolinysimoes@gmail.com',
-        document: '946.637.180-00',
-        phone: '(64) 99215-0899'
-      },
-      payment: 'À Vista',
-      total_price: '52500'
-    }
+    const order: OrderDetails = testData.reprovado as OrderDetails
 
     await deleteOrderByNumber(order.number)
     await insertOrder(order)
@@ -58,20 +33,7 @@ test.describe('Consulta de Pedido', () => {
   })
 
   test('deve consultar um pedido em analise', async ({ app }) => {
-    const order: OrderDetails = {
-      number: 'VLO-S3RC03',
-      status: 'EM_ANALISE',
-      color: 'Midnight Black',
-      wheels: 'aero Wheels',
-      customer: {
-        name: 'João Bobo',
-        email: 'joaobobo@velo.dev',
-        document: '561.309.830-18',
-        phone: '(64) 99999-9999'
-      },
-      payment: 'À Vista',
-      total_price: '40000'
-    }
+    const order: OrderDetails = testData.em_analise as OrderDetails
 
     await deleteOrderByNumber(order.number)
     await insertOrder(order)
