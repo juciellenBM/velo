@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test'
 
-export function createConfiguradorActions(page: Page) {
+export function createConfiguratorActions(page: Page) {
   const optionalCheckbox = (name: string | RegExp) => page.getByRole('checkbox', { name })
 
   return {
@@ -19,10 +19,10 @@ export function createConfiguradorActions(page: Page) {
     async expectPrice(price: string) {
       const priceElement = page.getByTestId('total-price')
       await expect(priceElement).toBeVisible()
-      await expect(priceElement).toContainText(price)
+      await expect(priceElement).toHaveText(price)
     },
 
-    async expectCarImageSrc(src: string | RegExp) {
+    async expectCarImageSrc(src: string) {
       const carImage = page.locator('img[alt^="Velô Sprint"]')
       await expect(carImage).toHaveAttribute('src', src)
     },

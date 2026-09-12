@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test'
 
-type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE'
+export type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE'
 
 export type OrderDetails = {
   number: string
@@ -12,14 +12,15 @@ export type OrderDetails = {
   total_price: string
 }
 
-export function createOrderLockupActions(page: Page) {
-  const oderInput = page.getByRole('textbox', { name: 'Número do Pedido' })
+export function createOrderLookupActions(page: Page) {
+
+  const orderInput = page.getByRole('textbox', { name: 'Número do Pedido' })
   const searchButton = page.getByRole('button', { name: 'Buscar Pedido' })
 
   return {
 
     elements: {
-      oderInput,
+      orderInput,
       searchButton
     },
 
@@ -27,12 +28,13 @@ export function createOrderLockupActions(page: Page) {
       await page.goto('/')
       const title = page.getByTestId('hero-section').getByRole('heading')
       await expect(title).toContainText('Velô Sprint')
+
       await page.getByRole('link', { name: 'Consultar Pedido' }).click()
       await expect(page.getByRole('heading')).toContainText('Consultar Pedido')
     },
 
     async searchOrder(code: string) {
-      await oderInput.fill(code)
+      await orderInput.fill(code)
       await searchButton.click()
     },
 
@@ -66,7 +68,7 @@ export function createOrderLockupActions(page: Page) {
       - paragraph: ${order.payment}
       - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
       `
-      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(snapshot, { timeout: 30_000 })
+      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(snapshot)
     },
 
     async validateStatusBadge(status: OrderStatus) {

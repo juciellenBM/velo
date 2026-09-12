@@ -1,30 +1,23 @@
-import { OrderDetails } from '../actions/orderLockupActions'
 import { db } from './database'
 import { OrderTable } from './schema'
+
+import { OrderDetails } from '../actions/orderLookupActions'
+
 import crypto from 'crypto'
 
+export function normalizeValue(value: string) {
+  if (!value) return '';
 
-function normalizeValue(value: string): string {
-  const cleanValue = value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove acentos (ex: 'À' -> 'A')
-    .toLowerCase()
-    .trim()
-
-  if (cleanValue.includes('vista')) {
-    return 'avista'
-  }
-
-  if (cleanValue.includes('financiamento')) {
-    return 'financiamento'
-  }
-
-  return cleanValue.replace(/\s+/g, '')
+  return value
+    .normalize('NFD') // separa acentos
+    .replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .replace(/\s+/g, '') // remove espaços
+    .toLowerCase(); // lowercase
 }
 
-
 export async function insertOrder(order: OrderDetails) {
-  const data: OrderTable ={ 
+
+  const data: OrderTable = {
     id: crypto.randomUUID(),
     order_number: order.number,
     color: order.color.toLowerCase().replace(' ', '-'),
@@ -40,7 +33,7 @@ export async function insertOrder(order: OrderDetails) {
     updated_at: new Date().toISOString(),
     optionals: [],
   }
- 
+  // If the record exists it might throw a duplicate error, but we manage teardown.
   await db.insertInto('orders').values(data).execute()
 }
 
