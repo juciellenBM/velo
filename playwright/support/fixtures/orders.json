@@ -40,5 +40,21 @@
     },
     "payment": "À Vista",
     "total_price": "40000"
+  },
+  "ct05": {
+    "number": "VLO-4L5O3D",
+    "status": "APROVADO",
+    "color": "Glacier Blue",
+    "wheels": "aero Wheels",
+    "customer": {
+      "name": "Juciellen",
+      "lastname": "Moraes",
+      "email": "juciellen@hotmail.com",
+      "document": "90632700033",
+      "phone": "(64) 99251-6810",
+      "store": "Velô Paulista - Av. Paulista, 1000"
+    },
+    "payment": "À Vista",
+    "total_price": "40000"
   }
 }

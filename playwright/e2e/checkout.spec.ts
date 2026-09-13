@@ -1,17 +1,18 @@
 import { test, expect } from '../support/fixtures'
+import type { OrderDetails } from '../support/actions/orderLookupActions'
+import { deleteOrderByNumber } from '../support/database/orderRepository'
+import { updateOrderFixture } from '../support/helpers'
+import testData from '../support/fixtures/orders.json' with { type: 'json' }
 
 test.describe('Checkout', () => {
-
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/order')
-    await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible()
-  })
 
   test.describe('Validações de campos obrigatórios', () => {
 
     let alerts: any
 
-    test.beforeEach(async ({ app }) => {
+    test.beforeEach(async ({ app, page }) => {
+      await page.goto('/order')
+      await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible()
       alerts = app.checkout.elements.alerts
     })
 
@@ -116,6 +117,50 @@ test.describe('Checkout', () => {
 
       // Assert
       await expect(alerts.terms).toHaveText('Aceite os termos')
+    })
+  })
+
+  test.describe('Criação de Pedido com Pagamento à Vista', () => {
+
+    const order: OrderDetails = testData.ct05 as OrderDetails
+
+    test.beforeEach(async () => {
+      // Exclui o pedido específico da execução anterior salvo no JSON
+      await deleteOrderByNumber(order.number)
+    })
+
+    test('deve finalizar pedido à vista com sucesso (CT05)', async ({ page, app }) => {
+      // Arrange - Navegação de ponta a ponta
+      await page.goto('/')
+      await page.getByTestId('hero-cta-primary').click()
+      await app.configurator.expectPrice('R$ 40.000,00')
+      await app.configurator.finishConfigurator()
+
+      await app.checkout.expectLoaded()
+      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+
+      // Act
+      await app.checkout.fillCustomerData(order.customer)
+      await app.checkout.selectStore(order.customer.store || 'Velô Paulista - Av. Paulista, 1000')
+      await app.checkout.selectPaymentMethod('avista')
+      await app.checkout.acceptTerms()
+      await app.checkout.submit()
+
+      // Assert
+      await app.checkout.validateSuccess({
+        name: `${order.customer.name} ${order.customer.lastname || ''}`.trim(),
+        email: order.customer.email,
+        store: order.customer.store,
+        price: 'R$ 40.000,00',
+      })
+
+      // Captura o código gerado dinamicamente pela aplicação (ex: VLO-ABC123)
+      const generatedOrderNumber = await app.checkout.getGeneratedOrderNumber()
+
+      // Salva o novo código gerado no JSON para ser excluído na próxima execução
+      updateOrderFixture('ct05', generatedOrderNumber)
+
+      // O pedido recém-criado se mantém no banco para verificação e simulação!
     })
   })
 })

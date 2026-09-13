@@ -7,7 +7,14 @@ export type OrderDetails = {
   status: OrderStatus
   color: string
   wheels: string
-  customer: { name: string; email: string; document: string; phone: string }
+  customer: {
+    name: string
+    lastname?: string
+    email: string
+    document: string
+    phone: string
+    store?: string
+  }
   payment: string
   total_price: string
 }

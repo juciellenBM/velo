@@ -22,7 +22,9 @@ export async function insertOrder(order: OrderDetails) {
     order_number: order.number,
     color: order.color.toLowerCase().replace(' ', '-'),
     wheel_type: order.wheels.replace(' Wheels', '').toLowerCase(),
-    customer_name: order.customer.name,
+    customer_name: order.customer.lastname
+      ? `${order.customer.name} ${order.customer.lastname}`
+      : order.customer.name,
     customer_email: order.customer.email,
     customer_phone: order.customer.phone,
     customer_cpf: order.customer.document,
@@ -39,4 +41,19 @@ export async function insertOrder(order: OrderDetails) {
 
 export async function deleteOrderByNumber(orderNumber: string) {
   await db.deleteFrom('orders').where('order_number', '=', orderNumber).execute()
+}
+
+export async function deleteOrderByCpf(cpf: string) {
+  if (!cpf) return
+  const rawDigits = cpf.replace(/\D/g, '')
+  await db
+    .deleteFrom('orders')
+    .where((eb) => {
+      const conditions = [eb('customer_cpf', '=', cpf)]
+      if (rawDigits) {
+        conditions.push(eb('customer_cpf', '=', rawDigits))
+      }
+      return eb.or(conditions)
+    })
+    .execute()
 }
