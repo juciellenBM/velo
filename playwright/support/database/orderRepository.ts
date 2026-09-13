@@ -57,3 +57,8 @@ export async function deleteOrderByCpf(cpf: string) {
     })
     .execute()
 }
+
+export async function deleteOrderByEmail(email: string) {
+  if (!email) return
+  await db.deleteFrom('orders').where('customer_email', '=', email).execute()
+}

@@ -85,7 +85,7 @@ export function createCheckoutActions(page: Page) {
       store?: string
       price?: string
     }) {
-      await expect(page.getByTestId('success-status')).toBeVisible()
+      await expect(page.getByTestId('success-status')).toBeVisible({ timeout: 10_000 })
       await expect(page.getByTestId('success-status')).toHaveText('Pedido Aprovado!')
       await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
 

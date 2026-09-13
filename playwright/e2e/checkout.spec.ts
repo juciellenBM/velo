@@ -1,7 +1,5 @@
 import { test, expect } from '../support/fixtures'
-import type { OrderDetails } from '../support/actions/orderLookupActions'
-import { deleteOrderByNumber } from '../support/database/orderRepository'
-import { updateOrderFixture } from '../support/helpers'
+import { deleteOrderByEmail } from '../support/database/orderRepository'
 import testData from '../support/fixtures/orders.json' with { type: 'json' }
 
 test.describe('Checkout', () => {
@@ -122,11 +120,11 @@ test.describe('Checkout', () => {
 
   test.describe('Criação de Pedido com Pagamento à Vista', () => {
 
-    const order: OrderDetails = testData.ct05 as OrderDetails
+    const order = testData.ct05
 
     test.beforeEach(async () => {
-      // Exclui o pedido específico da execução anterior salvo no JSON
-      await deleteOrderByNumber(order.number)
+      // Limpa do banco de dados qualquer pedido anterior gerado para este e-mail exclusivo
+      await deleteOrderByEmail(order.customer.email)
     })
 
     test('deve finalizar pedido à vista com sucesso (CT05)', async ({ page, app }) => {
@@ -153,12 +151,6 @@ test.describe('Checkout', () => {
         store: order.customer.store,
         price: 'R$ 40.000,00',
       })
-
-      // Captura o código gerado dinamicamente pela aplicação (ex: VLO-ABC123)
-      const generatedOrderNumber = await app.checkout.getGeneratedOrderNumber()
-
-      // Salva o novo código gerado no JSON para ser excluído na próxima execução
-      updateOrderFixture('ct05', generatedOrderNumber)
 
       // O pedido recém-criado se mantém no banco para verificação e simulação!
     })

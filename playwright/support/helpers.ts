@@ -1,6 +1,3 @@
-import fs from 'node:fs'
-import path from 'node:path'
-
 export function generateOrderCode() {
     const prefix = 'VLO'
 
@@ -13,15 +10,4 @@ export function generateOrderCode() {
     }
 
     return `${prefix}-${randomPart}`
-}
-
-export function updateOrderFixture(fixtureKey: string, newOrderNumber: string) {
-    const filePath = path.resolve(process.cwd(), 'playwright/support/fixtures/orders.json')
-    const content = fs.readFileSync(filePath, 'utf-8')
-    const orders = JSON.parse(content)
-
-    if (orders[fixtureKey]) {
-        orders[fixtureKey].number = newOrderNumber
-        fs.writeFileSync(filePath, JSON.stringify(orders, null, 2) + '\n', 'utf-8')
-    }
 }
