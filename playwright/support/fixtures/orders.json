@@ -54,5 +54,16 @@
     },
     "payment": "À Vista",
     "total_price": "40000"
+  },
+  "ct06": {
+    "customer": {
+      "name": "Maria Eduarda",
+      "lastname": "Silva",
+      "email": "testefinanciamento@velo.com",
+      "document": "46558963027",
+      "phone": "(11) 99999-9999",
+      "store": "Velô Paulista - Av. Paulista, 1000"
+    }
   }
+
 }

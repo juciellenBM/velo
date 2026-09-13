@@ -118,7 +118,7 @@ test.describe('Checkout', () => {
     })
   })
 
-  test.describe('Criação de Pedido com Pagamento à Vista', () => {
+  test.describe('Pagamentos e Confirmação', () => {
 
     const order = testData.ct05
 
@@ -151,8 +151,44 @@ test.describe('Checkout', () => {
         store: order.customer.store,
         price: 'R$ 40.000,00',
       })
+    })
 
-      // O pedido recém-criado se mantém no banco para verificação e simulação!
+    test('deve aprovar automática de crédito quando o score do CPF for maior que 700 no financiamento.', async ({ page, app }) => {
+      const order = testData.ct06
+
+      // Arrange - Navegação de ponta a ponta
+      await deleteOrderByEmail(order.customer.email)
+
+      await page.route('**/functions/v1/credit-analysis', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ status: 'Done', score: 850 }),
+        })
+      })
+
+      await page.goto('/')
+      await page.getByTestId('hero-cta-primary').click()
+      await app.configurator.expectPrice('R$ 40.000,00')
+      await app.configurator.finishConfigurator()
+
+      await app.checkout.expectLoaded()
+      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+
+      // Act
+      await app.checkout.fillCustomerData(order.customer)
+      await app.checkout.selectStore(order.customer.store || 'Velô Paulista - Av. Paulista, 1000')
+      await app.checkout.selectPaymentMethod('financiamento')
+      await app.checkout.acceptTerms()
+      await app.checkout.submit()
+
+      // Assert
+      await app.checkout.validateSuccess({
+        name: `${order.customer.name} ${order.customer.lastname || ''}`.trim(),
+        email: order.customer.email,
+        store: order.customer.store,
+        price: 'R$ 40.800,00',
+      })
     })
   })
 })
