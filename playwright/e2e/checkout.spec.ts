@@ -292,5 +292,75 @@ test.describe('Checkout', () => {
       await expect(page.getByTestId('success-status')).toHaveText('Crédito Reprovado')
       await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
     })
+
+    test('deve aprovar financiamento com score baixo e entrada superior a 50% (CT08)', async ({ page, app }) => {
+      const order = testData.ct08_com_entrada_maior_50
+
+      // Arrange - Navegação de ponta a ponta
+      await deleteOrderByEmail(order.customer.email)
+
+      await page.route('**/functions/v1/credit-analysis', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ status: 'Done', score: 450 }),
+        })
+      })
+
+      await page.goto('/')
+      await page.getByTestId('hero-cta-primary').click()
+      await app.configurator.expectPrice('R$ 40.000,00')
+      await app.configurator.finishConfigurator()
+
+      await app.checkout.expectLoaded()
+      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+
+      // Act
+      await app.checkout.fillCustomerData(order.customer)
+      await app.checkout.selectStore(order.customer.store || 'Velô Paulista - Av. Paulista, 1000')
+      await app.checkout.selectPaymentMethod('financiamento')
+      await app.checkout.setEntryValue(order.entryValue)
+      await app.checkout.acceptTerms()
+      await app.checkout.submit()
+
+      // Assert
+      await expect(page.getByTestId('success-status')).toHaveText('Pedido Aprovado!')
+      await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
+    })
+
+    test('deve aprovar financiamento com score baixo e entrada igual a 50% (CT08)', async ({ page, app }) => {
+      const order = testData.ct08_com_entrada_igual_50
+
+      // Arrange - Navegação de ponta a ponta
+      await deleteOrderByEmail(order.customer.email)
+
+      await page.route('**/functions/v1/credit-analysis', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ status: 'Done', score: 450 }),
+        })
+      })
+
+      await page.goto('/')
+      await page.getByTestId('hero-cta-primary').click()
+      await app.configurator.expectPrice('R$ 40.000,00')
+      await app.configurator.finishConfigurator()
+
+      await app.checkout.expectLoaded()
+      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+
+      // Act
+      await app.checkout.fillCustomerData(order.customer)
+      await app.checkout.selectStore(order.customer.store || 'Velô Paulista - Av. Paulista, 1000')
+      await app.checkout.selectPaymentMethod('financiamento')
+      await app.checkout.setEntryValue(order.entryValue)
+      await app.checkout.acceptTerms()
+      await app.checkout.submit()
+
+      // Assert
+      await expect(page.getByTestId('success-status')).toHaveText('Pedido Aprovado!')
+      await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
+    })
   })
 })

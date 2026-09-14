@@ -95,6 +95,28 @@
       "phone": "(11) 96666-6666",
       "store": "Velô Paulista - Av. Paulista, 1000"
     }
+  },
+  "ct08_com_entrada_maior_50": {
+    "entryValue": 25000,
+    "customer": {
+      "name": "Ana",
+      "lastname": "Dias",
+      "email": "ana.aprovada@velo.com",
+      "document": "83609949007",
+      "phone": "(11) 95555-5555",
+      "store": "Velô Paulista - Av. Paulista, 1000"
+    }
+  },
+  "ct08_com_entrada_igual_50": {
+    "entryValue": 20000,
+    "customer": {
+      "name": "Pedro",
+      "lastname": "Martins",
+      "email": "pedro.limite@velo.com",
+      "document": "09501958043",
+      "phone": "(11) 94444-4444",
+      "store": "Velô Paulista - Av. Paulista, 1000"
+    }
   }
 }
 
