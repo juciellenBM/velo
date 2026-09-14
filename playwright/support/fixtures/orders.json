@@ -64,6 +64,15 @@
       "phone": "(11) 99999-9999",
       "store": "Velô Paulista - Av. Paulista, 1000"
     }
+  },
+  "ct07": {
+    "customer": {
+      "name": "Carlos",
+      "lastname": "Ferreira",
+      "email": "carlos.analise@velo.com",
+      "document": "81646979079",
+      "phone": "(11) 98888-8888",
+      "store": "Velô Paulista - Av. Paulista, 1000"
+    }
   }
-
 }
