@@ -71,6 +71,10 @@ export function createCheckoutActions(page: Page) {
       await page.getByTestId(`payment-${method}`).click()
     },
 
+    async setEntryValue(value: string | number) {
+      await page.getByTestId('input-entry-value').fill(String(value))
+    },
+
     async acceptTerms() {
       await terms.check()
     },
