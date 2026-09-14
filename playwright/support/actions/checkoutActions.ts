@@ -1,5 +1,14 @@
 import { Page, expect } from '@playwright/test'
 
+export type ExpectedCheckoutResult = {
+  status: 'Pedido Aprovado!' | 'Pedido em Análise' | 'Crédito Reprovado' | string
+  orderNumberPattern?: RegExp
+  customerName?: string
+  customerEmail?: string
+  store?: string
+  totalPrice?: string
+}
+
 export function createCheckoutActions(page: Page) {
 
   const terms = page.getByTestId('checkout-terms')
@@ -104,6 +113,30 @@ export function createCheckoutActions(page: Page) {
       }
       if (expected?.price) {
         await expect(page.getByText(expected.price)).toBeVisible()
+      }
+    },
+
+    async expectResult(expected: ExpectedCheckoutResult) {
+      const statusBadge = page.getByTestId('success-status')
+      await expect(statusBadge).toBeVisible({ timeout: 10_000 })
+      await expect(statusBadge).toHaveText(expected.status)
+
+      if (expected.orderNumberPattern || expected.status === 'Pedido Aprovado!' || expected.status === 'Crédito Reprovado') {
+        const orderId = page.getByTestId('order-id')
+        await expect(orderId).toHaveText(expected.orderNumberPattern || /^VLO-[A-Z0-9]+$/)
+      }
+
+      if (expected.customerName) {
+        await expect(page.getByText(expected.customerName)).toBeVisible()
+      }
+      if (expected.customerEmail) {
+        await expect(page.getByText(expected.customerEmail)).toBeVisible()
+      }
+      if (expected.store) {
+        await expect(page.getByText(expected.store)).toBeVisible()
+      }
+      if (expected.totalPrice) {
+        await expect(page.getByText(expected.totalPrice)).toBeVisible()
       }
     },
 

@@ -120,22 +120,22 @@ test.describe('Checkout', () => {
 
   test.describe('Pagamentos e Confirmação', () => {
 
-    const order = testData.ct05
-
-    test.beforeEach(async () => {
-      // Limpa do banco de dados qualquer pedido anterior gerado para este e-mail exclusivo
-      await deleteOrderByEmail(order.customer.email)
-    })
-
-    test('deve finalizar pedido à vista com sucesso (CT05)', async ({ page, app }) => {
-      // Arrange - Navegação de ponta a ponta
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
+    test.beforeEach(async ({ app }) => {
+      // Arrange - Navegação de ponta a ponta até o Checkout com configuração padrão
+      await app.hero.open()
+      await app.hero.startConfiguration()
       await app.configurator.expectPrice('R$ 40.000,00')
       await app.configurator.finishConfigurator()
 
       await app.checkout.expectLoaded()
       await app.checkout.expectSummaryTotal('R$ 40.000,00')
+    })
+
+    test('deve finalizar pedido à vista com sucesso (CT05)', async ({ app }) => {
+      const order = testData.ct05
+
+      // Arrange
+      await deleteOrderByEmail(order.customer.email)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -145,35 +145,21 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await app.checkout.validateSuccess({
-        name: `${order.customer.name} ${order.customer.lastname || ''}`.trim(),
-        email: order.customer.email,
+      await app.checkout.expectResult({
+        status: 'Pedido Aprovado!',
+        customerName: `${order.customer.name} ${order.customer.lastname || ''}`.trim(),
+        customerEmail: order.customer.email,
         store: order.customer.store,
-        price: 'R$ 40.000,00',
+        totalPrice: 'R$ 40.000,00',
       })
     })
 
-    test('deve aprovar automática de crédito quando o score do CPF for maior que 700 no financiamento.', async ({ page, app }) => {
+    test('deve aprovar automática de crédito quando o score do CPF for maior que 700 no financiamento.', async ({ app }) => {
       const order = testData.ct06
 
-      // Arrange - Navegação de ponta a ponta
+      // Arrange
       await deleteOrderByEmail(order.customer.email)
-
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 850 }),
-        })
-      })
-
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
-      await app.configurator.expectPrice('R$ 40.000,00')
-      await app.configurator.finishConfigurator()
-
-      await app.checkout.expectLoaded()
-      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+      await app.mockApi.mockCreditAnalysis(850)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -183,35 +169,21 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await app.checkout.validateSuccess({
-        name: `${order.customer.name} ${order.customer.lastname || ''}`.trim(),
-        email: order.customer.email,
+      await app.checkout.expectResult({
+        status: 'Pedido Aprovado!',
+        customerName: `${order.customer.name} ${order.customer.lastname || ''}`.trim(),
+        customerEmail: order.customer.email,
         store: order.customer.store,
-        price: 'R$ 40.800,00',
+        totalPrice: 'R$ 40.800,00',
       })
     })
 
-    test('deve destinar para análise manual quando o score do CPF for entre 501 e 700 no financiamento (CT07)', async ({ page, app }) => {
+    test('deve destinar para análise manual quando o score do CPF for entre 501 e 700 no financiamento (CT07)', async ({ app }) => {
       const order = testData.ct07
 
-      // Arrange - Navegação de ponta a ponta
+      // Arrange
       await deleteOrderByEmail(order.customer.email)
-
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 600 }),
-        })
-      })
-
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
-      await app.configurator.expectPrice('R$ 40.000,00')
-      await app.configurator.finishConfigurator()
-
-      await app.checkout.expectLoaded()
-      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+      await app.mockApi.mockCreditAnalysis(600)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -221,30 +193,17 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await expect(page.getByTestId('success-status')).toHaveText('Pedido em Análise')
+      await app.checkout.expectResult({
+        status: 'Pedido em Análise',
+      })
     })
 
-    test('deve reprovar financiamento com score baixo sem entrada (CT08)', async ({ page, app }) => {
+    test('deve reprovar financiamento com score baixo sem entrada (CT08)', async ({ app }) => {
       const order = testData.ct08_sem_entrada
 
-      // Arrange - Navegação de ponta a ponta
+      // Arrange
       await deleteOrderByEmail(order.customer.email)
-
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 450 }),
-        })
-      })
-
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
-      await app.configurator.expectPrice('R$ 40.000,00')
-      await app.configurator.finishConfigurator()
-
-      await app.checkout.expectLoaded()
-      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+      await app.mockApi.mockCreditAnalysis(450)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -254,31 +213,17 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await expect(page.getByTestId('success-status')).toHaveText('Crédito Reprovado')
-      await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
+      await app.checkout.expectResult({
+        status: 'Crédito Reprovado',
+      })
     })
 
-    test('deve reprovar financiamento com score baixo e entrada inferior a 50% (CT08)', async ({ page, app }) => {
+    test('deve reprovar financiamento com score baixo e entrada inferior a 50% (CT08)', async ({ app }) => {
       const order = testData.ct08_com_entrada
 
-      // Arrange - Navegação de ponta a ponta
+      // Arrange
       await deleteOrderByEmail(order.customer.email)
-
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 450 }),
-        })
-      })
-
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
-      await app.configurator.expectPrice('R$ 40.000,00')
-      await app.configurator.finishConfigurator()
-
-      await app.checkout.expectLoaded()
-      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+      await app.mockApi.mockCreditAnalysis(450)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -289,31 +234,17 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await expect(page.getByTestId('success-status')).toHaveText('Crédito Reprovado')
-      await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
+      await app.checkout.expectResult({
+        status: 'Crédito Reprovado',
+      })
     })
 
-    test('deve aprovar financiamento com score baixo e entrada superior a 50% (CT08)', async ({ page, app }) => {
+    test('deve aprovar financiamento com score baixo e entrada superior a 50% (CT08)', async ({ app }) => {
       const order = testData.ct08_com_entrada_maior_50
 
-      // Arrange - Navegação de ponta a ponta
+      // Arrange
       await deleteOrderByEmail(order.customer.email)
-
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 450 }),
-        })
-      })
-
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
-      await app.configurator.expectPrice('R$ 40.000,00')
-      await app.configurator.finishConfigurator()
-
-      await app.checkout.expectLoaded()
-      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+      await app.mockApi.mockCreditAnalysis(450)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -324,31 +255,17 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await expect(page.getByTestId('success-status')).toHaveText('Pedido Aprovado!')
-      await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
+      await app.checkout.expectResult({
+        status: 'Pedido Aprovado!',
+      })
     })
 
-    test('deve aprovar financiamento com score baixo e entrada igual a 50% (CT08)', async ({ page, app }) => {
+    test('deve aprovar financiamento com score baixo e entrada igual a 50% (CT08)', async ({ app }) => {
       const order = testData.ct08_com_entrada_igual_50
 
-      // Arrange - Navegação de ponta a ponta
+      // Arrange
       await deleteOrderByEmail(order.customer.email)
-
-      await page.route('**/functions/v1/credit-analysis', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'Done', score: 450 }),
-        })
-      })
-
-      await page.goto('/')
-      await page.getByTestId('hero-cta-primary').click()
-      await app.configurator.expectPrice('R$ 40.000,00')
-      await app.configurator.finishConfigurator()
-
-      await app.checkout.expectLoaded()
-      await app.checkout.expectSummaryTotal('R$ 40.000,00')
+      await app.mockApi.mockCreditAnalysis(450)
 
       // Act
       await app.checkout.fillCustomerData(order.customer)
@@ -359,8 +276,9 @@ test.describe('Checkout', () => {
       await app.checkout.submit()
 
       // Assert
-      await expect(page.getByTestId('success-status')).toHaveText('Pedido Aprovado!')
-      await expect(page.getByTestId('order-id')).toHaveText(/^VLO-[A-Z0-9]+$/)
+      await app.checkout.expectResult({
+        status: 'Pedido Aprovado!',
+      })
     })
   })
 })
