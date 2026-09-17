@@ -1,0 +1,40 @@
+# Workflow de Integração Contínua (CI) focado na execução de testes unitários com Vitest
+# Estrutura modular preparada para expansão futura (ex: inclusão de novos jobs como lint, build e e2e)
+
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout do código-fonte
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Configuração do ambiente Node.js utilizando a versão global
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.5.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # 3. Habilitação do Corepack para gerenciamento do Yarn
+      - name: Enable Corepack
+        run: corepack enable
+
+      # 4. Instalação das dependências do projeto
+      - name: Install dependencies
+        run: yarn install
+
+      # 5. Execução da suíte de testes unitários
+      - name: Run unit tests
+        run: yarn test
