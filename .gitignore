@@ -35,3 +35,7 @@ dist-ssr
 /tests/evidencias/
 *orderstodelete.json
 *ordersToDelete.json
+.vercel
+.env*
+.github
+prompts
