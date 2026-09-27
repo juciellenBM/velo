@@ -129,4 +129,4 @@ jobs:
 
     steps:
       - name: Promote to Production
-        run: npx --yes vercel promote ${{ needs.build-and-deploy.outputs.deployment-url }} --token=${{ secrets.VERCEL_TOKEN }} --yes
+        run: yarn vercel promote ${{ needs.build-and-deploy.outputs.deployment-url }} --token=${{ secrets.VERCEL_TOKEN }} --yes
