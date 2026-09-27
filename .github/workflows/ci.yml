@@ -121,7 +121,12 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report
-      
-    
 
-  
+  promote:
+    name: Promote to Production
+    needs: [e2e-tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Promote to Production
+        run: npx --yes vercel promote ${{ needs.build-and-deploy.outputs.deployment-url }} --token=${{ secrets.VERCEL_TOKEN }} --yes
