@@ -1,7 +1,7 @@
 # Workflow de Integração Contínua (CI) focado na execução de testes unitários com Vitest
 # Estrutura modular preparada para expansão futura (ex: inclusão de novos jobs como lint, build e e2e)
 
-name: Continuous Integration
+name: Continuous Deployment
 
 on:
   push:
