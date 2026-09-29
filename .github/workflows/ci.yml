@@ -127,10 +127,36 @@ jobs:
           path: playwright-report
 
   promote:
-    name: Promote to Production
+    name: Deploy to Production
     needs: [build-and-deploy, e2e-tests]
     runs-on: ubuntu-latest
 
     steps:
-      - name: Promote to Production
-        run: npx vercel promote ${{ needs.build-and-deploy.outputs.deployment-url }} --token=${{ secrets.VERCEL_TOKEN }} --yes
+      # 1. Checkout do código-fonte
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Configuração do ambiente Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.5.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # 3. Habilitação do Corepack e instalação
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install
+
+      # 4. Puxa as variáveis de PRODUÇÃO da Vercel (Supabase de Produção)
+      - name: Pull Vercel Production Configuration
+        run: yarn vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      # 5. Compila a aplicação injetando as variáveis VITE_* de PRODUÇÃO no bundle
+      - name: Build for Production
+        run: yarn vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      # 6. Faz o deploy do bundle de produção na Vercel
+      - name: Deploy to Production
+        run: yarn vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
