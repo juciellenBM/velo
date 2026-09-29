@@ -39,3 +39,6 @@ dist-ssr
 .env*
 .github
 prompts
+
+# Supabase temporary files
+supabase/.temp/
